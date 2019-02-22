@@ -206,6 +206,10 @@ void output_ready(int64_t timestamp, float iaq, uint8_t iaq_accuracy, float temp
 	Serial.print(co2_equivalent);
 	Serial.print("| bVOC: ");
 	Serial.println(breath_voc_equivalent);
+
+	ds1.setTemperature(temperature);
+	ds2.setTemperature(humidity);
+	ds3.setTemperature(iaq);
 }
 
 /*!
@@ -317,11 +321,11 @@ void loop()
 		static float temperature = 20.0;
 		temperature += 0.1;
 		if (temperature > 120) temperature = 20.0;
-		ds1.setTemperature(temperature - 20);
-		ds2.setTemperature(temperature + 10);
-		ds3.setTemperature(temperature);
+		//ds1.setTemperature(temperature - 20);
+		//ds2.setTemperature(temperature + 10);
+		/*ds3.setTemperature(temperature);*/
 
-		Serial.println(temperature);
+		//Serial.println(temperature);
 	}
 }
 
