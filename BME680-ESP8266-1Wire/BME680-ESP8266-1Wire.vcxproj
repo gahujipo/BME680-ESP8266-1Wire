@@ -77,10 +77,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\BME680-ESP8266-1Wire;C:\Program Files (x86)\Arduino\libraries;C:\Users\LukasFi\Documents\Arduino\libraries;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\libraries;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266\avr;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266\libb64;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266\spiffs;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266\umm_malloc;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\variants\d1_mini;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\tools\sdk\include;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\tools\sdk\lwip2\include;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\tools\sdk\libc\xtensa-lx106-elf\include;C:\Users\LukasFi\AppData\Local\Temp\VMBuilds\BME6801-Wire\esp8266_d1_mini\Release\core;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include\c++\4.8.2;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include\c++\4.8.2\xtensa-lx106-elf;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\lib\gcc\xtensa-lx106-elf\4.8.2\include;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\tools\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\BME680-ESP8266-1Wire;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\libraries\Wire;C:\Program Files (x86)\Arduino\libraries;C:\Users\LukasFi\Documents\Arduino\libraries;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\libraries;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266\avr;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266\libb64;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266\spiffs;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\cores\esp8266\umm_malloc;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\variants\d1_mini;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\tools\sdk\include;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\tools\sdk\lwip2\include;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\tools\sdk\libc\xtensa-lx106-elf\include;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include\c++\4.8.2;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include\c++\4.8.2\xtensa-lx106-elf;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\lib\gcc\xtensa-lx106-elf\4.8.2\include;C:\Users\LukasFi\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.2\tools\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ProjectDir)__vm\.BME680-ESP8266-1Wire.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
-      <PreprocessorDefinitions>__ESP8266_ESp8266__;__ESP8266_ESP8266__;__ets__;ICACHE_FLASH;F_CPU=80000000L;LWIP_OPEN_SRC;TCP_MSS=536;ARDUINO=10805;ARDUINO_ESP8266_WEMOS_D1MINI;ARDUINO_ARCH_ESP8266;ESP8266;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__ESP8266_ESp8266__;__ESP8266_ESP8266__;_VMDEBUG=1;__ets__;ICACHE_FLASH;F_CPU=80000000L;LWIP_OPEN_SRC;TCP_MSS=536;ARDUINO=10805;ARDUINO_ESP8266_WEMOS_D1MINI;ARDUINO_ARCH_ESP8266;ESP8266;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -112,9 +112,33 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bme680.h" />
+    <ClInclude Include="bme680_defs.h" />
+    <ClInclude Include="bsec_datatypes.h" />
+    <ClInclude Include="bsec_integration.h" />
+    <ClInclude Include="bsec_interface.h" />
+    <ClInclude Include="DS18B20.h" />
+    <ClInclude Include="OneWireHub.h" />
+    <ClInclude Include="OneWireHub_config.h" />
+    <ClInclude Include="OneWireItem.h" />
+    <ClInclude Include="platform.h" />
     <ClInclude Include="__vm\.BME680-ESP8266-1Wire.vsarduino.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="bme680.c" />
+    <ClCompile Include="bsec_integration.c" />
+    <ClCompile Include="bsec_iot_example.c" />
+    <ClCompile Include="DS18B20.cpp" />
+    <ClCompile Include="OneWireHub.cpp" />
+    <ClCompile Include="OneWireItem.cpp" />
+    <ClCompile Include="platform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties arduino.upload.port="COM6" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
