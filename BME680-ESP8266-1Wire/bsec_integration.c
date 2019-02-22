@@ -477,6 +477,29 @@ static void bme680_bsec_process_data(bsec_input_t *bsec_inputs, uint8_t num_bsec
     }
 }
 
+
+/* Timestamp variables */
+int64_t BSEC_time_stamp = 0;
+int64_t BSEC_time_stamp_interval_ms = 0;
+
+/* Allocate enough memory for up to BSEC_MAX_PHYSICAL_SENSOR physical inputs*/
+bsec_input_t BSEC_bsec_inputs[BSEC_MAX_PHYSICAL_SENSOR];
+
+/* Number of inputs to BSEC */
+uint8_t BSEC_num_bsec_inputs = 0;
+
+/* BSEC sensor settings struct */
+bsec_bme_settings_t BSEC_sensor_settings;
+
+/* Save state variables */
+uint8_t BSEC_bsec_state[BSEC_MAX_STATE_BLOB_SIZE];
+uint8_t BSEC_work_buffer[BSEC_MAX_STATE_BLOB_SIZE];
+uint32_t BSEC_bsec_state_len = 0;
+uint32_t BSEC_n_samples = 0;
+
+bsec_library_return_t BSEC_bsec_status = BSEC_OK;
+
+
 /*!
  * @brief       Runs the main (endless) loop that queries sensor settings, applies them, and processes the measured data
  *
@@ -491,67 +514,34 @@ static void bme680_bsec_process_data(bsec_input_t *bsec_inputs, uint8_t num_bsec
 void bsec_iot_loop(sleep_fct sleep, get_timestamp_us_fct get_timestamp_us, output_ready_fct output_ready,
                     state_save_fct state_save, uint32_t save_intvl)
 {
-    /* Timestamp variables */
-    int64_t time_stamp = 0;
-    int64_t time_stamp_interval_ms = 0;
-    
-    /* Allocate enough memory for up to BSEC_MAX_PHYSICAL_SENSOR physical inputs*/
-    bsec_input_t bsec_inputs[BSEC_MAX_PHYSICAL_SENSOR];
-    
-    /* Number of inputs to BSEC */
-    uint8_t num_bsec_inputs = 0;
-    
-    /* BSEC sensor settings struct */
-    bsec_bme_settings_t sensor_settings;
-    
-    /* Save state variables */
-    uint8_t bsec_state[BSEC_MAX_STATE_BLOB_SIZE];
-    uint8_t work_buffer[BSEC_MAX_STATE_BLOB_SIZE];
-    uint32_t bsec_state_len = 0;
-    uint32_t n_samples = 0;
-    
-    bsec_library_return_t bsec_status = BSEC_OK;
-
-    while (1)
+    /* get the timestamp in nanoseconds before calling bsec_sensor_control() */
+	BSEC_time_stamp = get_timestamp_us() * 1000;
+        
+    /* Retrieve sensor settings to be used in this time instant by calling bsec_sensor_control */
+    bsec_sensor_control(BSEC_time_stamp, &BSEC_sensor_settings);
+        
+    /* Trigger a measurement if necessary */
+    bme680_bsec_trigger_measurement(&BSEC_sensor_settings, sleep);
+        
+    /* Read data from last measurement */
+	BSEC_num_bsec_inputs = 0;
+    bme680_bsec_read_data(BSEC_time_stamp, BSEC_bsec_inputs, &BSEC_num_bsec_inputs, BSEC_sensor_settings.process_data);
+        
+    /* Time to invoke BSEC to perform the actual processing */
+    bme680_bsec_process_data(BSEC_bsec_inputs, BSEC_num_bsec_inputs, output_ready);
+        
+    /* Increment sample counter */
+	BSEC_n_samples++;
+        
+    /* Retrieve and store state if the passed save_intvl */
+    if (BSEC_n_samples >= save_intvl)
     {
-        /* get the timestamp in nanoseconds before calling bsec_sensor_control() */
-        time_stamp = get_timestamp_us() * 1000;
-        
-        /* Retrieve sensor settings to be used in this time instant by calling bsec_sensor_control */
-        bsec_sensor_control(time_stamp, &sensor_settings);
-        
-        /* Trigger a measurement if necessary */
-        bme680_bsec_trigger_measurement(&sensor_settings, sleep);
-        
-        /* Read data from last measurement */
-        num_bsec_inputs = 0;
-        bme680_bsec_read_data(time_stamp, bsec_inputs, &num_bsec_inputs, sensor_settings.process_data);
-        
-        /* Time to invoke BSEC to perform the actual processing */
-        bme680_bsec_process_data(bsec_inputs, num_bsec_inputs, output_ready);
-        
-        /* Increment sample counter */
-        n_samples++;
-        
-        /* Retrieve and store state if the passed save_intvl */
-        if (n_samples >= save_intvl)
+		BSEC_bsec_status = bsec_get_state(0, BSEC_bsec_state, sizeof(BSEC_bsec_state), BSEC_work_buffer, sizeof(BSEC_work_buffer), &BSEC_bsec_state_len);
+        if (BSEC_bsec_status == BSEC_OK)
         {
-            bsec_status = bsec_get_state(0, bsec_state, sizeof(bsec_state), work_buffer, sizeof(work_buffer), &bsec_state_len);
-            if (bsec_status == BSEC_OK)
-            {
-                state_save(bsec_state, bsec_state_len);
-            }
-            n_samples = 0;
+            state_save(BSEC_bsec_state, BSEC_bsec_state_len);
         }
-        
-        
-        /* Compute how long we can sleep until we need to call bsec_sensor_control() next */
-        /* Time_stamp is converted from microseconds to nanoseconds first and then the difference to milliseconds */
-        time_stamp_interval_ms = (sensor_settings.next_call - get_timestamp_us() * 1000) / 1000000;
-        if (time_stamp_interval_ms > 0)
-        {
-            sleep((uint32_t)time_stamp_interval_ms);
-        }
+		BSEC_n_samples = 0;
     }
 }
 

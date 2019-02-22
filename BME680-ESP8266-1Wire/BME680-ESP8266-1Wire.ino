@@ -77,6 +77,18 @@
 
 #include "bsec_integration.h"
 #include <Wire.h>
+#include "OneWireHub.h"
+#include "DS18B20.h"  // Digital Thermometer, 12bit
+
+constexpr uint8_t pin_led{LED_BUILTIN};
+constexpr uint8_t pin_onewire{D3};
+
+auto hub = OneWireHub(pin_onewire);
+
+auto ds1 = DS18B20(DS18B20::family_code, 0x00, 0x00, 0xB2, 0x18, 0xDA, 0x00);
+auto ds2 = DS18B20(DS18B20::family_code, 0x00, 0x00, 0xA2, 0x18, 0xDA, 0x01);
+auto ds3 = DS18B20(DS18B20::family_code, 0x00, 0x00, 0x22, 0x18, 0xDA, 0x02);
+
 
 /**********************************************************************************************************************/
 /* functions */
@@ -249,6 +261,70 @@ uint32_t config_load(uint8_t *config_buffer, uint32_t n_buffer)
 	return 0;
 }
 
+bool blinking(void)
+{
+	constexpr  uint32_t interval = 1000;          // interval at which to blink (milliseconds)
+	static uint32_t nextMillis = millis();     // will store next time LED will updated
+
+	if (millis() > nextMillis)
+	{
+		nextMillis += interval;             // save the next time you blinked the LED
+		static uint8_t ledState = LOW;      // ledState used to set the LED
+		if (ledState == LOW)    ledState = HIGH;
+		else                    ledState = LOW;
+
+		digitalWrite(pin_led, ledState);
+
+		return 1;
+	}
+	return 0;
+}
+
+/* Timestamp variables */
+int64_t time_stamp = 0;
+int64_t time_stamp_interval_ms = 0;
+
+/* Allocate enough memory for up to BSEC_MAX_PHYSICAL_SENSOR physical inputs*/
+bsec_input_t bsec_inputs[BSEC_MAX_PHYSICAL_SENSOR];
+
+/* Number of inputs to BSEC */
+uint8_t num_bsec_inputs = 0;
+
+/* BSEC sensor settings struct */
+bsec_bme_settings_t sensor_settings;
+
+/* Save state variables */
+uint8_t bsec_state[BSEC_MAX_STATE_BLOB_SIZE];
+uint8_t work_buffer[BSEC_MAX_STATE_BLOB_SIZE];
+uint32_t bsec_state_len = 0;
+uint32_t n_samples = 0;
+
+bsec_library_return_t bsec_status = BSEC_OK;
+
+void loop()
+{
+	hub.poll();
+
+	if (get_timestamp_us() * 1000 >= sensor_settings.next_call)
+	{
+		bsec_iot_loop(sleep, get_timestamp_us, output_ready, state_save, 10000);
+	}
+
+	// Blink triggers the state-change
+	if (blinking())
+	{
+		// Set temp
+		static float temperature = 20.0;
+		temperature += 0.1;
+		if (temperature > 120) temperature = 20.0;
+		ds1.setTemperature(temperature - 20);
+		ds2.setTemperature(temperature + 10);
+		ds3.setTemperature(temperature);
+
+		Serial.println(temperature);
+	}
+}
+
 /*!
  * @brief       Main function which configures BSEC library and then reads and processes the data from sensor based
  *              on timer ticks
@@ -264,10 +340,9 @@ void setup()
 	Wire.begin(D1, D2); // sda, scl
 	Serial.begin(115200);
 
-	Serial.println("");
-	Serial.println("BME680");
-	Serial.println();
-	Serial.println();
+	hub.attach(ds1);
+	hub.attach(ds2);
+	hub.attach(ds3);
 
 	/* Call to the function which initializes the BSEC library
 	 * Switch on low-power mode and provide no temperature offset */
@@ -287,8 +362,5 @@ void setup()
 
 	/* Call to endless loop function which reads and processes data based on sensor settings */
 	/* State is saved every 10.000 samples, which means every 10.000 * 3 secs = 500 minutes  */
-	bsec_iot_loop(sleep, get_timestamp_us, output_ready, state_save, 10000);
+	//bsec_iot_loop(sleep, get_timestamp_us, output_ready, state_save, 10000);
 }
-
-void loop()
-{}
