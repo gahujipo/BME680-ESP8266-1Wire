@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Robert Bosch. All Rights Reserved.
+ * Copyright (C) 2017 Robert Bosch. All Rights Reserved. 
  *
  * Disclaimer
  *
@@ -58,34 +58,33 @@
  *
  */
 
- /*!
-  * @file bsec_iot_example.ino
-  *
-  * @brief
-  * Example for using of BSEC library in a fixed configuration with the BME680 sensor.
-  * This works by running an endless loop in the bsec_iot_loop() function.
-  */
+/*!
+ * @file bsec_iot_example.c
+ *
+ * @brief
+ * Example for using of BSEC library in a fixed configuration with the BME680 sensor.
+ * This works by running an endless loop in the bsec_iot_loop() function.
+ */
 
-  /*!
-   * @addtogroup bsec_examples BSEC Examples
-   * @brief BSEC usage examples
-   * @{*/
+/*!
+ * @addtogroup bsec_examples BSEC Examples
+ * @brief BSEC usage examples
+ * @{*/
 
-   /**********************************************************************************************************************/
-   /* header files */
-   /**********************************************************************************************************************/
+/**********************************************************************************************************************/
+/* header files */
+/**********************************************************************************************************************/
 
 #include "bsec_integration.h"
-#include <Wire.h>
 
 /**********************************************************************************************************************/
 /* functions */
 /**********************************************************************************************************************/
 
 /*!
- * @brief           Write operation in either Wire or SPI
+ * @brief           Write operation in either I2C or SPI
  *
- * param[in]        dev_addr        Wire or SPI device address
+ * param[in]        dev_addr        I2C or SPI device address
  * param[in]        reg_addr        register address
  * param[in]        reg_data_ptr    pointer to the data to be written
  * param[in]        data_len        number of bytes to be written
@@ -94,22 +93,16 @@
  */
 int8_t bus_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint16_t data_len)
 {
-	Wire.beginTransmission(dev_addr);
-	Wire.write(reg_addr);    /* Set register address to start writing to */
-
-	/* Write the data */
-	for (int index = 0; index < data_len; index++)
-	{
-		Wire.write(reg_data_ptr[index]);
-	}
-
-	return (int8_t)Wire.endTransmission();
+    // ...
+    // Please insert system specific function to write to the bus where BME680 is connected
+    // ...
+    return 0;
 }
 
 /*!
- * @brief           Read operation in either Wire or SPI
+ * @brief           Read operation in either I2C or SPI
  *
- * param[in]        dev_addr        Wire or SPI device address
+ * param[in]        dev_addr        I2C or SPI device address
  * param[in]        reg_addr        register address
  * param[out]       reg_data_ptr    pointer to the memory to be used to store the read data
  * param[in]        data_len        number of bytes to be read
@@ -118,22 +111,10 @@ int8_t bus_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint
  */
 int8_t bus_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint16_t data_len)
 {
-	int8_t comResult = 0;
-	Wire.beginTransmission(dev_addr);
-	Wire.write(reg_addr);                    /* Set register address to start reading from */
-	comResult = Wire.endTransmission();
-
-	delayMicroseconds(150);                 /* Precautionary response delay */
-	Wire.requestFrom(dev_addr, (uint8_t)data_len);    /* Request data */
-
-	int index = 0;
-	while (Wire.available())  /* The slave device may send less than requested (burst read) */
-	{
-		reg_data_ptr[index] = Wire.read();
-		index++;
-	}
-
-	return comResult;
+    // ...
+    // Please insert system specific function to read from bus where BME680 is connected
+    // ...
+    return 0;
 }
 
 /*!
@@ -145,7 +126,9 @@ int8_t bus_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint1
  */
 void sleep(uint32_t t_ms)
 {
-	delay(t_ms);
+    // ...
+    // Please insert system specific function sleep or delay for t_ms milliseconds
+    // ...
 }
 
 /*!
@@ -155,7 +138,11 @@ void sleep(uint32_t t_ms)
  */
 int64_t get_timestamp_us()
 {
-	return (int64_t)millis() * 1000;
+    int64_t system_current_time = 0;
+    // ...
+    // Please insert system specific function to retrieve a timestamp (in microseconds)
+    // ...
+    return system_current_time;
 }
 
 /*!
@@ -175,25 +162,12 @@ int64_t get_timestamp_us()
  * @return          none
  */
 void output_ready(int64_t timestamp, float iaq, uint8_t iaq_accuracy, float temperature, float humidity,
-				  float pressure, float raw_temperature, float raw_humidity, float gas, bsec_library_return_t bsec_status,
-				  float static_iaq, float co2_equivalent, float breath_voc_equivalent)
+     float pressure, float raw_temperature, float raw_humidity, float gas, bsec_library_return_t bsec_status,
+     float static_iaq, float co2_equivalent, float breath_voc_equivalent)
 {
-	Serial.print("[");
-	Serial.print(timestamp / 1e6);
-	Serial.print("] T: ");
-	Serial.print(temperature);
-	Serial.print("| rH: ");
-	Serial.print(humidity);
-	Serial.print("| IAQ: ");
-	Serial.print(iaq);
-	Serial.print(" (");
-	Serial.print(iaq_accuracy);
-	Serial.print("| Static IAQ: ");
-	Serial.print(static_iaq);
-	Serial.print("| CO2e: ");
-	Serial.print(co2_equivalent);
-	Serial.print("| bVOC: ");
-	Serial.println(breath_voc_equivalent);
+    // ...
+    // Please insert system specific code to further process or display the BSEC outputs
+    // ...
 }
 
 /*!
@@ -206,13 +180,13 @@ void output_ready(int64_t timestamp, float iaq, uint8_t iaq_accuracy, float temp
  */
 uint32_t state_load(uint8_t *state_buffer, uint32_t n_buffer)
 {
-	// ...
-	// Load a previous library state from non-volatile memory, if available.
-	//
-	// Return zero if loading was unsuccessful or no state was available, 
-	// otherwise return length of loaded state string.
-	// ...
-	return 0;
+    // ...
+    // Load a previous library state from non-volatile memory, if available.
+    //
+    // Return zero if loading was unsuccessful or no state was available, 
+    // otherwise return length of loaded state string.
+    // ...
+    return 0;
 }
 
 /*!
@@ -225,11 +199,11 @@ uint32_t state_load(uint8_t *state_buffer, uint32_t n_buffer)
  */
 void state_save(const uint8_t *state_buffer, uint32_t length)
 {
-	// ...
-	// Save the string some form of non-volatile memory, if possible.
-	// ...
+    // ...
+    // Save the string some form of non-volatile memory, if possible.
+    // ...
 }
-
+ 
 /*!
  * @brief           Load library config from non-volatile memory
  *
@@ -240,13 +214,13 @@ void state_save(const uint8_t *state_buffer, uint32_t length)
  */
 uint32_t config_load(uint8_t *config_buffer, uint32_t n_buffer)
 {
-	// ...
-	// Load a library config from non-volatile memory, if available.
-	//
-	// Return zero if loading was unsuccessful or no config was available, 
-	// otherwise return length of loaded config string.
-	// ...
-	return 0;
+    // ...
+    // Load a library config from non-volatile memory, if available.
+    //
+    // Return zero if loading was unsuccessful or no config was available, 
+    // otherwise return length of loaded config string.
+    // ...
+    return 0;
 }
 
 /*!
@@ -255,40 +229,30 @@ uint32_t config_load(uint8_t *config_buffer, uint32_t n_buffer)
  *
  * @return      result of the processing
  */
-void setup()
+int main()
 {
-	return_values_init ret;
-
-	/* Init I2C and serial communication */
-	Wire.begin();
-	Wire.begin(D1, D2); // sda, scl
-	Serial.begin(115200);
-
-	Serial.println("");
-	Serial.println("BME680");
-	Serial.println();
-	Serial.println();
-
-	/* Call to the function which initializes the BSEC library
-	 * Switch on low-power mode and provide no temperature offset */
-	ret = bsec_iot_init(BSEC_SAMPLE_RATE_LP, 5.0f, bus_write, bus_read, sleep, state_load, config_load);
-	if (ret.bme680_status)
-	{
-		/* Could not intialize BME680 */
-		Serial.println("Error while initializing BME680");
-		return;
-	}
-	else if (ret.bsec_status)
-	{
-		/* Could not intialize BSEC library */
-		Serial.println("Error while initializing BSEC library");
-		return;
-	}
-
-	/* Call to endless loop function which reads and processes data based on sensor settings */
-	/* State is saved every 10.000 samples, which means every 10.000 * 3 secs = 500 minutes  */
-	bsec_iot_loop(sleep, get_timestamp_us, output_ready, state_save, 10000);
+    return_values_init ret;
+    
+    /* Call to the function which initializes the BSEC library 
+     * Switch on low-power mode and provide no temperature offset */
+    ret = bsec_iot_init(BSEC_SAMPLE_RATE_LP, 0.0f, bus_write, bus_read, sleep, state_load, config_load);
+    if (ret.bme680_status)
+    {
+        /* Could not intialize BME680 */
+        return (int)ret.bme680_status;
+    }
+    else if (ret.bsec_status)
+    {
+        /* Could not intialize BSEC library */
+        return (int)ret.bsec_status;
+    }
+    
+    /* Call to endless loop function which reads and processes data based on sensor settings */
+    /* State is saved every 10.000 samples, which means every 10.000 * 3 secs = 500 minutes  */
+    bsec_iot_loop(sleep, get_timestamp_us, output_ready, state_save, 10000);
+    
+    return 0;
 }
 
-void loop()
-{}
+/*! @}*/
+
