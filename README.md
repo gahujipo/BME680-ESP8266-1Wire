@@ -6,6 +6,12 @@ The main purpose is to integrate the BME680 sensor into Loxone via 1-Wire. But t
 
 The project was developed for a WEMOS/Lolin D1 mini. But it should work on other ESP8266 microcontrollers too. 
 
+# Wiring
+
+![1wire-scheme](doc/resources/WiringScheme.png)
+
+The red thing up there is a level shifter. This is needed because Wemos/Lolin D1 mini works with 1-Wire at 3.3V but Loxone expects 1-Wire at 5V. So the level shifter converts the signals bidirectional. In our setup we [used this article](https://www.watterott.com/de/Level-Shifter), but feel free to use a similar article from another store/manufacturer.
+
 # Compiling the project
 
 ## Install Arduino Studio
