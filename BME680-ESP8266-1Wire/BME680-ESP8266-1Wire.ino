@@ -77,6 +77,7 @@
 
 #include "bsec_integration.h"
 #include <Wire.h>
+#include <EEPROM.h>
 #include "OneWireHub.h"
 #include "DS18B20.h"  // Digital Thermometer, 12bit
 
@@ -88,6 +89,9 @@ auto hub = OneWireHub(pin_onewire);
 auto ds1 = DS18B20(DS18B20::family_code, 0x00, 0x00, 0xB2, 0x18, 0xDA, 0x00);
 auto ds2 = DS18B20(DS18B20::family_code, 0x00, 0x00, 0xA2, 0x18, 0xDA, 0x01);
 auto ds3 = DS18B20(DS18B20::family_code, 0x00, 0x00, 0x22, 0x18, 0xDA, 0x02);
+
+int SensorStorageSizeAddress = 100;
+int SensorStorageAddress = 102;
 
 
 /**********************************************************************************************************************/
@@ -222,6 +226,7 @@ void output_ready(int64_t timestamp, float iaq, uint8_t iaq_accuracy, float temp
  */
 uint32_t state_load(uint8_t *state_buffer, uint32_t n_buffer)
 {
+
 	// ...
 	// Load a previous library state from non-volatile memory, if available.
 	//
@@ -241,9 +246,14 @@ uint32_t state_load(uint8_t *state_buffer, uint32_t n_buffer)
  */
 void state_save(const uint8_t *state_buffer, uint32_t length)
 {
-	// ...
-	// Save the string some form of non-volatile memory, if possible.
-	// ...
+	EEPROM.write(SensorStorageSizeAddress, length);
+
+	for (int i = 0; i < length; ++i)
+		EEPROM.write(SensorStorageAddress+i, state_buffer[i]);
+
+	EEPROM.commit();
+
+	Serial.printf("Stored %d values", length);
 }
 
 /*!
@@ -256,13 +266,25 @@ void state_save(const uint8_t *state_buffer, uint32_t length)
  */
 uint32_t config_load(uint8_t *config_buffer, uint32_t n_buffer)
 {
+	int len = EEPROM.read(SensorStorageSizeAddress);
+	Serial.printf("Reading %d values", len);
+
+	if (len > n_buffer)
+	{
+		Serial.println("Buffer to small");
+		return 0;
+	}
+
+	for (int i = 0; i < len; ++i)
+		config_buffer[i] = EEPROM.read(SensorStorageAddress + i);
 	// ...
 	// Load a library config from non-volatile memory, if available.
 	//
 	// Return zero if loading was unsuccessful or no config was available, 
 	// otherwise return length of loaded config string.
 	// ...
-	return 0;
+
+	return len;
 }
 
 bool blinking(void)
@@ -314,19 +336,7 @@ void loop()
 		bsec_iot_loop(sleep, get_timestamp_us, output_ready, state_save, 10000);
 	}
 
-	// Blink triggers the state-change
-	if (blinking())
-	{
-		// Set temp
-		static float temperature = 20.0;
-		temperature += 0.1;
-		if (temperature > 120) temperature = 20.0;
-		//ds1.setTemperature(temperature - 20);
-		//ds2.setTemperature(temperature + 10);
-		/*ds3.setTemperature(temperature);*/
-
-		//Serial.println(temperature);
-	}
+	blinking();
 }
 
 /*!
@@ -337,7 +347,12 @@ void loop()
  */
 void setup()
 {
+	EEPROM.begin(512);
+
 	return_values_init ret;
+	
+	pinMode(pin_led, OUTPUT);
+
 
 	/* Init I2C and serial communication */
 	Wire.begin();
